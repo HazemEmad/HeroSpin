@@ -1,9 +1,9 @@
-export const getRandomNumber = (min, max) => {
+export const getRandomNumber = () => {
   var nums = [],
     ranNums = [],
-    i = max,
-    j = min;
-  for (let count = min; count <= max; count++) nums.push(count);
+    i = 20,
+    j = 0;
+  for (let count = 0; count <= 20; count++) nums.push(count);
   while (i--) {
     j = Math.floor(Math.random() * (i + 1));
     ranNums.push(nums[j]);
