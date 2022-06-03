@@ -20,7 +20,7 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
   },
   heroImage: {width: '100%', height: '100%'},
-  btn: {
+  btn: loading => ({
     backgroundColor: colors.SECONDARY,
     borderRadius: 5,
     height: 70,
@@ -30,7 +30,8 @@ export default styles = StyleSheet.create({
     bottom: 150,
     justifyContent: 'center',
     alignItems: 'center',
-  },
+    opacity: loading ? 0.5 : 1,
+  }),
   btnTxt: {
     color: colors.WHITE,
     fontWeight: 'bold',

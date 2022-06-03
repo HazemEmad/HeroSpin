@@ -53,10 +53,13 @@ const Home = () => {
             resizeMode={'stretch'}
             style={style.heroImage}
           />
-          <Text style={style.heroName}>{hero?.name ?? ''}</Text>
+          <Text style={style.heroName}>{loading ? '' : hero?.name ?? ''}</Text>
         </View>
       </ImageBackground>
-      <TouchableOpacity style={style.btn} onPress={getRandomHeros}>
+      <TouchableOpacity
+        style={style.btn(loading)}
+        onPress={getRandomHeros}
+        disabled={loading}>
         <Text style={style.btnTxt}>Pick Your Hero?</Text>
       </TouchableOpacity>
     </View>
