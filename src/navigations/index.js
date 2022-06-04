@@ -3,7 +3,12 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from '../screens/home';
 import MovieDetails from '../screens/movie-details';
+import {LogBox} from 'react-native';
 
+LogBox.ignoreLogs([
+  'ViewPropTypes will be removed',
+  'ColorPropType will be removed',
+]);
 const Stack = createNativeStackNavigator();
 const MainNavigator = () => {
   return (

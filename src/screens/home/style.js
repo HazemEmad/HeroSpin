@@ -1,5 +1,6 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet} from 'react-native';
 import colors from '../../constants/colors';
+import {width} from '../../constants/const-values';
 
 export default styles = StyleSheet.create({
   container: {
@@ -19,10 +20,10 @@ export default styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  heroImage: {width: '75%', height: '85%', borderRadius: 15},
+  heroImage: {width: '75%', height: '85%', borderRadius: 10},
   btn: loading => ({
     backgroundColor: colors.SECONDARY,
-    borderRadius: 15,
+    borderRadius: 10,
     height: 70,
     width: '85%',
     alignSelf: 'center',
@@ -46,7 +47,7 @@ export default styles = StyleSheet.create({
   heroName: {
     marginTop: 30,
     textAlign: 'right',
-    width: Dimensions.get('window').width * 0.8,
+    width: width * 0.8,
     fontSize: 18,
     color: colors.WHITE,
     fontWeight: 'bold',

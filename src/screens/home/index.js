@@ -5,22 +5,20 @@ import {
   Image,
   TouchableOpacity,
   Text,
-  Dimensions,
 } from 'react-native';
 import CarouselHeros from '../../components/carousel-heros';
+import {width} from '../../constants/const-values';
 import images from '../../constants/images';
 import getHeros from '../../services/get-heros';
 import {getRandomNumber} from '../../utils/helpers';
 import style from './style';
 
-const Home = () => {
+const Home = ({navigation}) => {
   const [heros, setHeros] = React.useState([]);
   const [offset, setOffset] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
-  const [loadingImage, setLoadingImage] = React.useState(false);
   const [total, setTotal] = React.useState(-1);
   const [currentIndex, setCurrentIndex] = React.useState(0);
-  const {width, height} = Dimensions.get('window');
 
   const structRandomHeros = (heros, randomArr) => {
     let randomHeros = [];
@@ -54,12 +52,16 @@ const Home = () => {
   const renderImage = src => (
     <Image source={src} resizeMode={'stretch'} style={style.heroImage} />
   );
-
   const renderHeroImage = ({item}) => {
     return (
       <TouchableOpacity
         style={style.heroCard}
-        onPress={() => console.log('hello')}>
+        onPress={() => {
+          navigation.navigate('MovieDetails', {
+            heroName: item.name,
+            getRandomHeros: getRandomHeros,
+          });
+        }}>
         {renderImage({uri: structThumbnail(item.thumbnail)})}
         <Text style={style.heroName} numberOfLines={2}>
           {item.id != heros[currentIndex].id ? '' : item.name ?? ''}
@@ -78,7 +80,7 @@ const Home = () => {
         style={style.posterImage}>
         <View style={style.heroContainer}>
           {!heros.length || loading ? (
-            renderImage(loading ? images.gif : images.QUESTION_MARK)
+            renderImage(loading ? images.GIF : images.QUESTION_MARK)
           ) : (
             <CarouselHeros
               data={heros}
