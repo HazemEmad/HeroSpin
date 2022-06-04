@@ -1,8 +1,9 @@
 import axios from 'axios';
 import {baseUrlIMDB, imdbApis} from '../constants/urls';
+import {keyIMDB} from '@env';
+import {getEnvFile} from '../utils/helpers';
 
-const key = 'k_89iinluq';
-
+const key = getEnvFile(keyIMDB);
 const getMovies = search =>
   axios
     .create({

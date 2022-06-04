@@ -1,13 +1,14 @@
 import axios from 'axios';
 import md5 from 'md5';
 import {baseUrlMarvel, marvelApis} from '../constants/urls';
-
-const publickey = '1c18413212077e41fc6ece90ad4507fb';
-const privateKey = '6681f866b1d88396914ba48e937daefff8764636';
+import {publickeyMarvel, privateKeyMarvel} from '@env';
+import {getEnvFile} from '../utils/helpers';
 
 const ts = Number(new Date());
+const puplicKey = getEnvFile(publickeyMarvel);
+const privateKey = getEnvFile(privateKeyMarvel);
 
-const hash = md5(ts + privateKey + publickey);
+const hash = md5(ts + privateKey + puplicKey);
 
 const getHeros = offset =>
   axios
@@ -16,7 +17,7 @@ const getHeros = offset =>
       params: {
         offset,
         ts,
-        apikey: publickey,
+        apikey: puplicKey,
         hash,
       },
     })

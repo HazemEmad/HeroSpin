@@ -11,3 +11,4 @@ export const getRandomNumber = () => {
   }
   return ranNums;
 };
+export const getEnvFile = str => str.replace(';', '').replaceAll("'", '');

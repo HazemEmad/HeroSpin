@@ -7,8 +7,9 @@ import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs([
   'ViewPropTypes will be removed',
-  'ColorPropType will be removed',
+  'Non-serializable values were found in the navigation state',
 ]);
+
 const Stack = createNativeStackNavigator();
 const MainNavigator = () => {
   return (
