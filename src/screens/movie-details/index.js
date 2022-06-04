@@ -29,7 +29,6 @@ const MovieDetails = ({navigation, route}) => {
   const getRandomMovies = () => {
     getMovies(heroName)
       .then(res => {
-        console.log(res.data);
         setMovies(res.data.results);
         setErrorMessage(res.data.errorMessage);
       })
