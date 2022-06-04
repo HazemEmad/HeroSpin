@@ -5,19 +5,30 @@ import {
   Image,
   TouchableOpacity,
   Text,
+  Dimensions,
 } from 'react-native';
+import CarouselHeros from '../../components/carousel-heros';
 import images from '../../constants/images';
 import getHeros from '../../services/get-heros';
 import {getRandomNumber} from '../../utils/helpers';
 import style from './style';
 
 const Home = () => {
-  const [hero, setHero] = React.useState({});
+  const [heros, setHeros] = React.useState([]);
   const [offset, setOffset] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
   const [loadingImage, setLoadingImage] = React.useState(false);
-  const [randomIndexes, setRandomIndexes] = React.useState([]);
   const [total, setTotal] = React.useState(-1);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const {width, height} = Dimensions.get('window');
+
+  const structRandomHeros = (heros, randomArr) => {
+    let randomHeros = [];
+    for (let i = 0; i < randomArr.length; i++) {
+      randomHeros.push(heros[randomArr[i]]);
+    }
+    return randomHeros;
+  };
 
   const getRandomHeros = () => {
     setLoading(true);
@@ -25,13 +36,13 @@ const Home = () => {
       .then(res => {
         res = res.data.data;
         let randomIndexArr = getRandomNumber();
-        setRandomIndexes(randomIndexArr);
         if (total < 0) setTotal(res.total);
         else {
           if (offset < total) setOffset(offset + res.limit);
           else setOffset(0);
         }
-        setHero(res.results[randomIndexArr[0]]);
+        setCurrentIndex(0);
+        setHeros(structRandomHeros(res.results, randomIndexArr));
       })
       .catch(err => console.log('error,', err))
       .finally(() => setLoading(false));
@@ -40,14 +51,24 @@ const Home = () => {
   const structThumbnail = thumbnail =>
     thumbnail.path.replace('http', 'https') + '.' + thumbnail.extension;
 
-  const loadingState = loading || loadingImage;
+  const renderImage = src => (
+    <Image source={src} resizeMode={'stretch'} style={style.heroImage} />
+  );
 
-  const getThumbnail = () =>
-    loading
-      ? images.gif
-      : Object.keys(hero)?.length === 0
-      ? images.QUESTION_MARK
-      : {uri: structThumbnail(hero.thumbnail)};
+  const renderHeroImage = ({item}) => {
+    return (
+      <TouchableOpacity
+        style={style.heroCard}
+        onPress={() => console.log('hello')}>
+        {renderImage({uri: structThumbnail(item.thumbnail)})}
+        <Text style={style.heroName} numberOfLines={2}>
+          {item.id != heros[currentIndex].id ? '' : item.name ?? ''}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const onSnapToItem = i => setCurrentIndex(i);
 
   return (
     <View style={style.container}>
@@ -56,22 +77,23 @@ const Home = () => {
         blurRadius={8}
         style={style.posterImage}>
         <View style={style.heroContainer}>
-          <Image
-            source={getThumbnail()}
-            resizeMode={'stretch'}
-            onLoadStart={() => setLoadingImage(true)}
-            onLoad={() => setLoadingImage(false)}
-            style={style.heroImage}
-          />
-          <Text style={style.heroName}>
-            {loadingState ? '' : hero?.name ?? ''}
-          </Text>
+          {!heros.length || loading ? (
+            renderImage(loading ? images.gif : images.QUESTION_MARK)
+          ) : (
+            <CarouselHeros
+              data={heros}
+              renderItem={renderHeroImage}
+              sliderWidth={width}
+              itemWidth={width}
+              onSnapToItem={onSnapToItem}
+            />
+          )}
         </View>
       </ImageBackground>
       <TouchableOpacity
-        style={style.btn(loadingState)}
+        style={style.btn(loading)}
         onPress={getRandomHeros}
-        disabled={loadingState}>
+        disabled={loading}>
         <Text style={style.btnTxt}>Pick Your Hero?</Text>
       </TouchableOpacity>
     </View>
