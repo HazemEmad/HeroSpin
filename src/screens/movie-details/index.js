@@ -6,22 +6,25 @@ import {
   Text,
   ActivityIndicator,
   ImageBackground,
-  StatusBar,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import Carousel from 'react-native-snap-carousel';
+
 import colors from '../../constants/colors';
 import {width} from '../../constants/const-values';
 import images from '../../constants/images';
 import getMovies from '../../services/get-movies';
 import style from './style';
-import Carousel from 'react-native-snap-carousel';
 
 const MovieDetails = ({navigation, route}) => {
   const [movies, setMovies] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState('');
-
   const {heroName, getRandomHeros} = route.params;
+
+  React.useEffect(() => {
+    getRandomMovies();
+  }, []);
 
   const getRandomMovies = () => {
     getMovies(heroName)
@@ -30,9 +33,15 @@ const MovieDetails = ({navigation, route}) => {
         setMovies(res.data.results);
         setErrorMessage(res.data.errorMessage);
       })
-      .catch(err => console.log(err))
+      .catch(err => console.log(err.message))
       .finally(() => setLoading(false));
   };
+
+  const renderBackBtn = () => (
+    <TouchableOpacity onPress={() => navigation.goBack()} style={{zIndex: 2}}>
+      <Image source={images.BACK_ARROW} style={style.backArrow} />
+    </TouchableOpacity>
+  );
 
   const renderLoadingIndicator = () =>
     loading && (
@@ -84,10 +93,6 @@ const MovieDetails = ({navigation, route}) => {
       );
     }
   };
-  const getRandomAgain = () => {
-    getRandomHeros();
-    navigation.goBack();
-  };
 
   const renderGetRandomAgain = () => (
     <TouchableOpacity style={style.btn} onPress={getRandomAgain}>
@@ -95,16 +100,14 @@ const MovieDetails = ({navigation, route}) => {
     </TouchableOpacity>
   );
 
-  React.useEffect(() => {
-    getRandomMovies();
-  }, []);
+  const getRandomAgain = () => {
+    getRandomHeros();
+    navigation.goBack();
+  };
 
   return (
     <SafeAreaView style={style.container}>
-      <StatusBar backgroundColor={'red'} />
-      <TouchableOpacity onPress={() => navigation.goBack()} style={{zIndex: 2}}>
-        <Image source={images.BACK_ARROW} style={style.backArrow} />
-      </TouchableOpacity>
+      {renderBackBtn()}
       {renderCarouselMovies()}
       {renderGetRandomAgain()}
       {renderLoadingIndicator()}

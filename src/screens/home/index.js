@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
+
 import CarouselHeros from '../../components/carousel-heros';
 import {width} from '../../constants/const-values';
 import images from '../../constants/images';
@@ -19,14 +20,6 @@ const Home = ({navigation}) => {
   const [loading, setLoading] = React.useState(false);
   const [total, setTotal] = React.useState(-1);
   const [currentIndex, setCurrentIndex] = React.useState(0);
-
-  const structRandomHeros = (heros, randomArr) => {
-    let randomHeros = [];
-    for (let i = 0; i < randomArr.length; i++) {
-      randomHeros.push(heros[randomArr[i]]);
-    }
-    return randomHeros;
-  };
 
   const getRandomHeros = () => {
     setLoading(true);
@@ -42,26 +35,47 @@ const Home = ({navigation}) => {
         setCurrentIndex(0);
         setHeros(structRandomHeros(res.results, randomIndexArr));
       })
-      .catch(err => console.log('error,', err))
+      .catch(err => console.log('error', err.message))
       .finally(() => setLoading(false));
   };
-
-  const structThumbnail = thumbnail =>
-    thumbnail.path.replace('http', 'https') + '.' + thumbnail.extension;
 
   const renderImage = src => (
     <Image source={src} resizeMode={'stretch'} style={style.heroImage} />
   );
+
+  const renderRandomBtn = () => (
+    <TouchableOpacity
+      style={style.btn(loading)}
+      onPress={getRandomHeros}
+      disabled={loading}>
+      <Text style={style.btnTxt}>Pick Your Hero?</Text>
+    </TouchableOpacity>
+  );
+
+  const renderBackgroundContainer = () => (
+    <ImageBackground
+      source={images.POSTER}
+      blurRadius={8}
+      style={style.posterImage}>
+      <View style={style.heroContainer}>
+        {!heros.length || loading ? (
+          renderImage(loading ? images.GIF : images.QUESTION_MARK)
+        ) : (
+          <CarouselHeros
+            data={heros}
+            renderItem={renderHeroImage}
+            sliderWidth={width}
+            itemWidth={width}
+            onSnapToItem={onSnapToItem}
+          />
+        )}
+      </View>
+    </ImageBackground>
+  );
+
   const renderHeroImage = ({item}) => {
     return (
-      <TouchableOpacity
-        style={style.heroCard}
-        onPress={() => {
-          navigation.navigate('MovieDetails', {
-            heroName: item.name,
-            getRandomHeros: getRandomHeros,
-          });
-        }}>
+      <TouchableOpacity style={style.heroCard} onPress={navigate}>
         {renderImage({uri: structThumbnail(item.thumbnail)})}
         <Text style={style.heroName} numberOfLines={2}>
           {item.id != heros[currentIndex].id ? '' : item.name ?? ''}
@@ -70,34 +84,30 @@ const Home = ({navigation}) => {
     );
   };
 
+  const navigate = () => {
+    navigation.navigate('MovieDetails', {
+      heroName: item.name,
+      getRandomHeros: getRandomHeros,
+    });
+  };
+
   const onSnapToItem = i => setCurrentIndex(i);
+
+  const structThumbnail = thumbnail =>
+    thumbnail.path.replace('http', 'https') + '.' + thumbnail.extension;
+
+  const structRandomHeros = (heros, randomArr) => {
+    let randomHeros = [];
+    for (let i = 0; i < randomArr.length; i++) {
+      randomHeros.push(heros[randomArr[i]]);
+    }
+    return randomHeros;
+  };
 
   return (
     <View style={style.container}>
-      <ImageBackground
-        source={images.POSTER}
-        blurRadius={8}
-        style={style.posterImage}>
-        <View style={style.heroContainer}>
-          {!heros.length || loading ? (
-            renderImage(loading ? images.GIF : images.QUESTION_MARK)
-          ) : (
-            <CarouselHeros
-              data={heros}
-              renderItem={renderHeroImage}
-              sliderWidth={width}
-              itemWidth={width}
-              onSnapToItem={onSnapToItem}
-            />
-          )}
-        </View>
-      </ImageBackground>
-      <TouchableOpacity
-        style={style.btn(loading)}
-        onPress={getRandomHeros}
-        disabled={loading}>
-        <Text style={style.btnTxt}>Pick Your Hero?</Text>
-      </TouchableOpacity>
+      {renderBackgroundContainer()}
+      {renderRandomBtn()}
     </View>
   );
 };
